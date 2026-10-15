@@ -6,8 +6,9 @@ be run directly as a script:
 
     python Biological/Simulations/Protein_Folding_Simulation.py -s HHPPHLHPHHPP
 
-The CLI accepts an explicit sequence, or can generate a random sequence.
-Allowed residue characters: H (hydrophobic), P (polar), L (interface).
+The CLI accepts an explicit sequence, a file of sequences, or can generate a
+random sequence. Allowed residue characters: H (hydrophobic), P (polar), L
+(interface).
 """
 
 import argparse
@@ -87,34 +88,77 @@ def _random_sequence(length: int) -> str:
     return "".join(random.choice(choices) for _ in range(length))
 
 
+def _read_sequences_from_file(path: str) -> List[str]:
+    """Read sequences from a file.
+
+    The file may contain one sequence per line. Blank lines and lines starting
+    with '#' are ignored. Lines are stripped of surrounding whitespace.
+    """
+    sequences: List[str] = []
+    with open(path, "r", encoding="utf-8") as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            sequences.append(line)
+    return sequences
+
+
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Run the ProteinBoundaryFoldingSimulator on a short sequence")
+    parser = argparse.ArgumentParser(description="Run the ProteinBoundaryFoldingSimulator on sequences")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-s", "--sequence", type=str, help="Residue sequence (e.g. HHPPHLHP)")
     group.add_argument("-r", "--random", type=int, metavar="N", help="Generate a random sequence of length N")
+    group.add_argument("-f", "--file", type=str, metavar="PATH", help="Path to a file with one sequence per line")
     parser.add_argument("--origin-seed", type=str, default="((0/1)))", help="Origin seed string to include in the output")
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON output")
+    parser.add_argument("--continue-on-error", action="store_true", help="Continue processing other sequences if a sequence in the input file is invalid (errors printed to stderr)")
 
     args = parser.parse_args(argv)
 
+    sequences: List[str] = []
     try:
         if args.sequence:
-            seq = _validate_sequence(args.sequence)
-        else:
+            sequences = [_validate_sequence(args.sequence)]
+        elif args.random is not None:
             if args.random <= 0:
                 raise ValueError("Random sequence length must be > 0")
-            seq = _random_sequence(args.random)
+            sequences = [_random_sequence(args.random)]
+        else:
+            # file path provided
+            raw_seqs = _read_sequences_from_file(args.file)
+            if not raw_seqs:
+                raise ValueError("Input file contains no sequences")
+            # validate all (or validate on the fly below)
+            for raw in raw_seqs:
+                try:
+                    sequences.append(_validate_sequence(raw))
+                except ValueError as exc:
+                    if args.continue_on_error:
+                        print(f"Skipping invalid sequence '{raw}': {exc}", file=sys.stderr)
+                        continue
+                    else:
+                        raise
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2
 
-    simulator = ProteinBoundaryFoldingSimulator(sequence=seq, origin_seed=args.origin_seed)
-    result = simulator.fold_simulation()
+    # Run simulations for all sequences collected
+    results: List[dict] = []
+    for seq in sequences:
+        simulator = ProteinBoundaryFoldingSimulator(sequence=seq, origin_seed=args.origin_seed)
+        results.append(simulator.fold_simulation())
+
+    # Output: single dict for single input, list for multiple
+    if len(results) == 1:
+        out_obj = results[0]
+    else:
+        out_obj = results
 
     if args.pretty:
-        print(json.dumps(result, indent=4))
+        print(json.dumps(out_obj, indent=4))
     else:
-        print(json.dumps(result))
+        print(json.dumps(out_obj))
 
     return 0
 
