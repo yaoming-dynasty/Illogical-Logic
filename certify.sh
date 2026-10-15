@@ -17,7 +17,7 @@ echo "[*] Step 2: Executing relational mapping operator (~)..."
 echo "[*] Step 3: Generating outer public commitment digest ({The_Outside_Boundary})..."
 echo ""
 
-# Run the python script and include the repository's Algebraic.md by default
+# Run the python script (no publishing by default)
 python3 Examples/rpa_framework.py --file Algebraic.md
 
 echo ""
