@@ -1,121 +1,350 @@
-#!/usr/bin/env python3
+```python
 """
-Module: master_framework_runner.py
-Framework: Relational Boundary Framework (((0/1))) ~ {The_Boundary_Inside} + {The_Outside_Boundary} + {The_Boundary_LIne}
-Author: Christopher Thomas Ronio
-Description: Master execution script orchestrating all framework subsystems: 
-             AI Reasoning, Topological Protein Folding, Cryptographic Boundary Solvers, and Relational Blockchain Ledger.
+RELATIONAL BOUNDARY FRAMEWORK
+Logic-Gate Computational Model
+
+Author:
+    Christopher Thomas Ronio
+
+Core relationship:
+
+    {Many & Few}
+        =
+    {Boundary Inside}
+        +
+    {Outside Boundary}
+        +
+    {Boundary Line}
+
+Computational interpretation:
+
+    X = input state
+    T(X) = logic-gate transformation
+    F(X) = boundary classification
+
+For Boolean systems:
+
+    X = (A, B)
+    T(X) = Gate(A, B)
+    Y = {0, 1}
+
+    Y = 1  -> INSIDE
+    Y = 0  -> OUTSIDE
+
+The logic gate itself is the BOUNDARY LINE.
 """
 
-import hashlib
-import json
-import time
 
-class FrameworkViolationError(Exception):
-    """Universal exception for topological boundary breaches across all subsystems."""
-    pass
+from dataclasses import dataclass
+from typing import Callable
 
-class MasterFrameworkRunner:
-    def __init__(self, origin_seed: str = "((0/1)))"):
-        self.origin_seed = origin_seed
-        self.boundary_inside = "{The_Boundary_Inside}"
-        self.outside_boundary = "{The_Outside_Boundary}"
-        self.boundary_line = "{The_Boundary_LIne}"
 
-    def run_subsystem_ai_reasoning(self):
-        print("\n" + "="*70)
-        print(" [SUBSYSTEM 1] TOPOLOGICAL AI REASONING ENGINE")
-        print("="*70)
-        
-        latent_thoughts = [
-            {"id": "Premise_1", "content": "Establish foundational topological axioms.", "contains_contradiction": False, "entropy_drift_score": 0.1},
-            {"id": "Premise_2", "content": "Assume flat self-reference.", "contains_contradiction": True, "entropy_drift_score": 0.2}, # Pruned
-            {"id": "Premise_3", "content": "Enforce hierarchical nesting to resolve paradoxes.", "contains_contradiction": False, "entropy_drift_score": 0.15}
+# =============================================================
+# BOOLEAN BOUNDARY STATE
+# =============================================================
+
+@dataclass(frozen=True)
+class BooleanState:
+    A: int
+    B: int
+
+    def __post_init__(self):
+        if self.A not in (0, 1):
+            raise ValueError("A must be 0 or 1")
+
+        if self.B not in (0, 1):
+            raise ValueError("B must be 0 or 1")
+
+
+# =============================================================
+# RELATIONAL BOUNDARY GATE
+# =============================================================
+
+class BoundaryLogicGate:
+
+    def __init__(
+        self,
+        name: str,
+        gate: Callable[[int, int], int]
+    ):
+        self.name = name
+        self.gate = gate
+
+    # ---------------------------------------------------------
+    # T(X)
+    # ---------------------------------------------------------
+
+    def transform(self, state: BooleanState) -> int:
+        """
+        T(X)
+
+        Transforms the input boundary state into
+        a Boolean output.
+        """
+
+        return self.gate(state.A, state.B)
+
+    # ---------------------------------------------------------
+    # BOUNDARY CLASSIFICATION
+    # ---------------------------------------------------------
+
+    def classify(self, state: BooleanState) -> dict:
+
+        output = self.transform(state)
+
+        if output == 1:
+
+            boundary = "INSIDE"
+
+        else:
+
+            boundary = "OUTSIDE"
+
+        return {
+            "input": (state.A, state.B),
+            "output": output,
+            "boundary": boundary,
+            "gate": self.name
+        }
+
+    # ---------------------------------------------------------
+    # MANY & FEW
+    # ---------------------------------------------------------
+
+    def many_few(self, state: BooleanState) -> dict:
+
+        output = self.transform(state)
+
+        if output == 1:
+
+            return {
+                "many_few": "FEW -> INSIDE",
+                "meaning":
+                    "The input combination satisfies the boundary."
+            }
+
+        return {
+            "many_few": "MANY -> OUTSIDE",
+            "meaning":
+                "The input combination does not satisfy the boundary."
+        }
+
+    # ---------------------------------------------------------
+    # TRUTH TABLE
+    # ---------------------------------------------------------
+
+    def truth_table(self):
+
+        states = [
+            BooleanState(0, 0),
+            BooleanState(0, 1),
+            BooleanState(1, 0),
+            BooleanState(1, 1)
         ]
-        
-        valid_steps = []
-        for step in latent_thoughts:
-            if step["contains_contradiction"] or step["entropy_drift_score"] > 0.85:
-                print(f"    [-] AI Thought '{step['id']}' PRUNED by Boundary Firewall ({self.boundary_line}).")
-            else:
-                valid_steps.append(step)
-                print(f"    [+] AI Thought '{step['id']}' Verified inside {self.boundary_inside}.")
 
-        synthesized_output = " ".join([s["content"] for s in valid_steps])
-        print(f"    [+] Composition Bridge (B_comp) Output: \"{synthesized_output}\"")
+        table = []
 
-    def run_subsystem_protein_folding(self):
-        print("\n" + "="*70)
-        print(" [SUBSYSTEM 2] TOPOLOGICAL PROTEIN FOLDING ENGINE")
-        print("="*70)
-        
-        candidates = [
-            {"id": "Conf_Alpha", "radius": 22, "max_radius": 40, "self_intersecting": False},
-            {"id": "Conf_Beta", "radius": 65, "max_radius": 40, "self_intersecting": False}, # Pruned (Breach)
-            {"id": "Conf_Gamma", "radius": 30, "max_radius": 40, "self_intersecting": True}   # Pruned (Singularity)
-        ]
-        
-        for state in candidates:
-            if state["radius"] > state["max_radius"]:
-                print(f"    [-] Conformation '{state['id']}': Boundary Breach detected.")
-            elif state["self_intersecting"]:
-                print(f"    [-] Conformation '{state['id']}': Topological Singularity detected.")
-            else:
-                print(f"    [+] Conformation '{state['id']}' successfully validated and folded via Bridge Triad.")
+        for state in states:
 
-    def run_subsystem_crypto_solver(self):
-        print("\n" + "="*70)
-        print(" [SUBSYSTEM 3] CRYPTOGRAPHIC BOUNDARY & ITERATIVE SOLVER")
-        print("="*70)
-        
-        payload = "Relational Boundary Framework Certification - Christopher Thomas Ronio"
-        target_hash = hashlib.sha256(payload.encode()).hexdigest()
-        print(f"    [*] Target Boundary Wall (SHA-256): {target_hash[:16]}...")
-        
-        # Simulating state-space solver loop (not(B_trans))
-        nonce = 0
-        solved = False
-        start_time = time.time()
-        
-        while not solved and nonce < 100000:
-            test_string = f"{payload}:{nonce}"
-            test_hash = hashlib.sha256(test_string.encode()).hexdigest()
-            if test_hash.startswith("000"):
-                solved = True
-                print(f"    [+] Iterative Solver Loop Resolved! Nonce: {nonce} | Hash: {test_hash[:16]}...")
-                break
-            nonce += 1
-            
-        if not solved:
-            print(f"    [*] Solver completed test iterations. Boundary wall remains secure.")
+            result = self.classify(state)
 
-    def run_subsystem_blockchain(self):
-        print("\n" + "="*70)
-        print(" [SUBSYSTEM 4] TOPOLOGICAL BLOCKCHAIN LEDGER")
-        print("="*70)
-        
-        genesis_tx = [{"sender": "SYSTEM", "receiver": "ROOT", "amount": 0.0, "note": "Origin Seed ((0/1)))"}]
-        block_data = {"index": 1, "transactions": genesis_tx, "previous_hash": "0", "axiom": self.origin_seed}
-        block_hash = hashlib.sha256(json.dumps(block_data, sort_keys=True).encode()).hexdigest()
-        
-        print(f"    [+] Genesis Block Composed in {self.boundary_inside}.")
-        print(f"    [+] Boundary Hash (L): {block_hash[:16]}...")
-        print(f"    [*] Ledger Integrity Verified: All boundary walls secure.")
+            table.append(result)
 
-    def execute_master_pipeline(self):
-        print(f"=== RELATIONAL BOUNDARY FRAMEWORK: MASTER ORCHESTRATION PIPELINE ===")
-        print(f"Framework Axiom: {self.origin_seed} ~ {{The_Boundary_Inside}} + {{The_Outside_Boundary}} + {{The_Boundary_LIne}}")
-        print(f"Certified Architect: Christopher Thomas Ronio\n")
-        
-        self.run_subsystem_ai_reasoning()
-        self.run_subsystem_protein_folding()
-        self.run_subsystem_crypto_solver()
-        self.run_subsystem_blockchain()
-        
-        print("\n" + "="*70)
-        print(" [MASTER PIPELINE COMPLETE] ALL SUBSYSTEMS SYNCHRONIZED & OPERATIONAL")
-        print("="*70)
+        return table
+
+
+# =============================================================
+# LOGIC GATES
+# =============================================================
+
+AND_GATE = BoundaryLogicGate(
+    "AND",
+    lambda A, B: A & B
+)
+
+
+OR_GATE = BoundaryLogicGate(
+    "OR",
+    lambda A, B: A | B
+)
+
+
+XOR_GATE = BoundaryLogicGate(
+    "XOR",
+    lambda A, B: A ^ B
+)
+
+
+NAND_GATE = BoundaryLogicGate(
+    "NAND",
+    lambda A, B: 1 - (A & B)
+)
+
+
+NOR_GATE = BoundaryLogicGate(
+    "NOR",
+    lambda A, B: 1 - (A | B)
+)
+
+
+# =============================================================
+# RELATIONAL BOUNDARY ANALYSIS
+# =============================================================
+
+def analyze_gate(gate: BoundaryLogicGate):
+
+    print()
+    print("=" * 70)
+    print(f"RELATIONAL BOUNDARY: {gate.name} GATE")
+    print("=" * 70)
+
+    print()
+    print("A B | T(X) | Boundary")
+    print("----------------------")
+
+    for row in gate.truth_table():
+
+        A, B = row["input"]
+
+        print(
+            f"{A} {B} |"
+            f"  {row['output']}   |"
+            f" {row['boundary']}"
+        )
+
+    print()
+    print("Many & Few Interpretation")
+    print("-" * 30)
+
+    for row in gate.truth_table():
+
+        state = BooleanState(*row["input"])
+
+        interpretation = gate.many_few(state)
+
+        print(
+            f"{row['input']} -> "
+            f"{interpretation['many_few']}"
+        )
+
+
+# =============================================================
+# BOUNDARY LINE
+# =============================================================
+
+def boundary_line(A: int, B: int) -> str:
+    """
+    The boundary line is represented by the AND relation:
+
+        A AND B
+
+    Only the state (1,1) crosses into INSIDE.
+
+    Every other state remains OUTSIDE.
+    """
+
+    output = A & B
+
+    if output == 1:
+        return "INSIDE"
+
+    return "OUTSIDE"
+
+
+# =============================================================
+# DEMONSTRATE F(X)
+# =============================================================
+
+def F(state: BooleanState, gate: BoundaryLogicGate) -> dict:
+    """
+    F(X) = classification of X relative to the boundary.
+
+    X      = input state
+    T(X)   = gate transformation
+    F(X)   = boundary classification
+    """
+
+    transformed = gate.transform(state)
+
+    if transformed == 1:
+
+        classification = "INSIDE"
+
+    else:
+
+        classification = "OUTSIDE"
+
+    return {
+        "X": (state.A, state.B),
+        "T(X)": transformed,
+        "F(X)": classification
+    }
+
+
+# =============================================================
+# MAIN COMPUTATIONAL EXPERIMENT
+# =============================================================
 
 if __name__ == "__main__":
-    runner = MasterFrameworkRunner()
-    runner.execute_master_pipeline()
+
+    print()
+    print("=" * 70)
+    print("RELATIONAL BOUNDARY FRAMEWORK")
+    print("ACTUAL BOOLEAN COMPUTATIONAL MODEL")
+    print("=" * 70)
+
+    print()
+    print("AXIOM:")
+    print()
+    print("{Many & Few}")
+    print("    =")
+    print("{Boundary Inside}")
+    print("+")
+    print("{Outside Boundary}")
+    print("+")
+    print("{Boundary Line}")
+
+    # ---------------------------------------------------------
+    # TEST AND GATE
+    # ---------------------------------------------------------
+
+    analyze_gate(AND_GATE)
+
+    # ---------------------------------------------------------
+    # TEST OR GATE
+    # ---------------------------------------------------------
+
+    analyze_gate(OR_GATE)
+
+    # ---------------------------------------------------------
+    # TEST XOR GATE
+    # ---------------------------------------------------------
+
+    analyze_gate(XOR_GATE)
+
+    # ---------------------------------------------------------
+    # DIRECT F(X) TEST
+    # ---------------------------------------------------------
+
+    print()
+    print("=" * 70)
+    print("F(X) DIRECT CLASSIFICATION")
+    print("=" * 70)
+
+    states = [
+        BooleanState(0, 0),
+        BooleanState(0, 1),
+        BooleanState(1, 0),
+        BooleanState(1, 1)
+    ]
+
+    for state in states:
+
+        result = F(state, AND_GATE)
+
+        print(
+            f"\nX     = {result['X']}"
+            f"\nT(X)  = {result['T(X)']}"
+            f"\nF(X)  = {result['F(X)']}"
+        )
+```
