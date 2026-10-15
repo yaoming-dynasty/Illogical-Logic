@@ -36,4 +36,12 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        pytest || {
+          rc=$?;
+          if [ $rc -eq 5 ]; then
+            echo "No tests collected (pytest exit code 5) — continuing";
+            exit 0;
+          else
+            exit $rc;
+          fi
+        }
