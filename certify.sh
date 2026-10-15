@@ -17,8 +17,8 @@ echo "[*] Step 2: Executing relational mapping operator (~)..."
 echo "[*] Step 3: Generating outer public commitment digest ({The_Outside_Boundary})..."
 echo ""
 
-# Run the python script
-python3 rpa_framework.py
+# Run the python script (correct path in repository)
+python3 Examples/rpa_framework.py
 
 echo ""
 echo "========================================================"
